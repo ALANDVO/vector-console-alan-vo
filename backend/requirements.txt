@@ -1,0 +1,11 @@
+fastapi==0.143.0
+uvicorn==0.54.0
+pydantic==2.14.1
+pydantic-core==2.50.1
+sqlalchemy==2.1.4
+httpx==0.28.1
+pytest==9.1.1
+pytest-asyncio==1.4.0
+python-multipart==0.0.32
+itsdangerous==2.2.0
+starlette==1.7.0

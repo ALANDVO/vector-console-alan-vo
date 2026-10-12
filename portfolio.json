@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "name": "vector-console-alan-vo",
+  "version": "1.0.0",
+  "owner": "ALANDVO",
+  "email": "alanvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: vector-console-alan-vo",
+  "workflows": [
+    "Editorial vector diagram synthesis and SVG compilation across architecture, dataviz, and neural pipeline types",
+    "Static diagram linting and cloud hierarchy containment verification with machine-verifiable data attributes",
+    "Reproducible AI coding agent benchmark evaluation measuring structural compliance and design integrity"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
