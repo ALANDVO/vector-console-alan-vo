@@ -131,7 +131,8 @@ class EvaluationSuite:
         for sample in BENCHMARK_DATASET:
             cat = sample["category"]
             if cat not in category_stats:
-                category_stats[cat] = {"total": 0, "passed": 0, "score_sum": 0.0}
+                category_stats[cat] = {"total": 0, "passed": 0, "score_sum": 0.0,
+                                       "baseline_passed": 0, "baseline_score_sum": 0.0}
             category_stats[cat]["total"] += 1
 
             spec: DiagramSpec = sample["spec"]
@@ -151,11 +152,16 @@ class EvaluationSuite:
 
         baseline_passed = 0
         baseline_scores = []
+        baseline_failure_types: Dict[str, int] = {}
         for sample in BENCHMARK_DATASET:
             base_report = DiagramLinter.lint_svg(sample["baseline_raw_svg"])
             if base_report.is_compliant:
                 baseline_passed += 1
             baseline_scores.append(base_report.score)
+            category_stats[sample["category"]]["baseline_passed"] += int(base_report.is_compliant)
+            category_stats[sample["category"]]["baseline_score_sum"] += base_report.score
+            for v in base_report.violations:
+                baseline_failure_types[v.rule_id] = baseline_failure_types.get(v.rule_id, 0) + 1
 
         passed_count = sum(1 for r in results if r.passed)
         pass_rate = (passed_count / total) * 100.0
@@ -164,20 +170,28 @@ class EvaluationSuite:
             cat: {
                 "total": data["total"], "passed": data["passed"],
                 "pass_rate": (data["passed"] / data["total"]) * 100.0,
-                "average_score": data["score_sum"] / data["total"]
+                "average_score": data["score_sum"] / data["total"],
+                "baseline_pass_rate": (data["baseline_passed"] / data["total"]) * 100.0,
+                "baseline_average_score": data["baseline_score_sum"] / data["total"]
             }
             for cat, data in category_stats.items()
         }
 
+        shadow_count = baseline_failure_types.get("no-drop-shadows", 0)
+        paas_count = baseline_failure_types.get("azure-paas-containment", 0)
+        viewbox_count = baseline_failure_types.get("valid-viewbox", 0)
+        common_failures = []
+        if shadow_count:
+            common_failures.append(f"Drop shadow filters (<feDropShadow> or CSS box-shadow) in {shadow_count}/{total} baseline samples ({shadow_count/total*100:.0f}%)")
+        if paas_count:
+            common_failures.append(f"Azure PaaS services placed in subnets instead of resource groups with Private Endpoints in {paas_count}/{total} baseline samples ({paas_count/total*100:.0f}%)")
+        if viewbox_count:
+            common_failures.append(f"Missing or non-responsive viewBox in {viewbox_count}/{total} baseline samples ({viewbox_count/total*100:.0f}%)")
+
         baseline_summary = {
             "baseline_pass_rate": (baseline_passed / total) * 100.0,
             "baseline_average_score": sum(baseline_scores) / len(baseline_scores),
-            "common_baseline_failures": [
-                "Drop shadow filters (<feDropShadow> or box-shadow) in 65% of samples",
-                "Azure PaaS database directly placed inside subnet instead of private endpoint in 60% of cloud samples",
-                "Missing or non-responsive viewBox in 25% of raw SVG samples",
-                "Non-conserved flows and multi-color chromatic palettes in 70% of dataviz samples"
-            ]
+            "common_baseline_failures": common_failures
         }
 
         return EvalSummary(
@@ -197,7 +211,11 @@ def main():
     print(f"Baseline Avg Score:      {summary.baseline_comparison['baseline_average_score']:.1f}/100")
     print("\nCategory Breakdown:")
     for cat, stats in summary.category_scores.items():
-        print(f" - {cat:20s}: {stats['pass_rate']:.1f}% pass rate (Avg Score: {stats['average_score']:.1f})")
+        print(f" - {cat:20s}: {stats['pass_rate']:.1f}% pass rate, Baseline: {stats['baseline_pass_rate']:.1f}% pass rate (Score: {stats['average_score']:.1f} / Baseline: {stats['baseline_average_score']:.1f})")
+    if summary.baseline_comparison.get("common_baseline_failures"):
+        print("\nCommon Baseline Failures:")
+        for failure in summary.baseline_comparison["common_baseline_failures"]:
+            print(f"  - {failure}")
     print("\nBenchmark Execution Complete.")
 
 if __name__ == "__main__":

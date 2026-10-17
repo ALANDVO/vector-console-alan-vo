@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +12,17 @@ from app.api.eval import router as eval_router
 from app.api.llm_routes import router as llm_router
 from app.api.audit import router as audit_router
 
+def _read_version() -> str:
+    try:
+        version_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+            "VERSION"
+        )
+        with open(version_path) as f:
+            return f.read().strip()
+    except (FileNotFoundError, OSError):
+        return "0.0.0"
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize database tables on startup
@@ -21,7 +33,7 @@ def create_app() -> FastAPI:
     application = FastAPI(
         title="Vector Console",
         description="Editorial diagram design and AI coding agent evaluation console",
-        version="1.0.0",
+        version=_read_version(),
         lifespan=lifespan
     )
 

@@ -3,7 +3,7 @@
 > Work in progress. This checkpoint may be incomplete or fail tests. See PLAN.md and STATUS.md before use.
 
 
-Current version: `1.0.0`.
+Current version: `1.1.0`.
 
 **Vector Console** is an editorial vector graphics synthesis and structural diagram evaluation console designed for AI coding agents (Claude Code, Cursor, Codex, GitHub Copilot, Factory Droid, and Pi). While modern Large Language Models frequently generate malformed, visually noisy SVG ("Mermaid slop", drop shadow filters, clipped viewBoxes, and illegal cloud security topologies), Vector Console provides a deterministic, grammar-driven compiler and automated linter ensuring crisp vector geometry, single-accent ink opacity ramps, monospace numerical typography, and machine-verifiable cloud containment invariants.
 
@@ -88,19 +88,21 @@ The evaluation dataset consists of **20 expert-labeled diagram tasks** categoriz
 
 Measurements recorded from empirical evaluation runs:
 
-| Category | Samples | Raw LLM Baseline Pass Rate | Vector Console Pass Rate | Guided Avg Quality Score |
+| Category | Samples | Baseline Pass Rate | Vector Console Pass Rate | Guided Avg Quality Score |
 | :--- | :---: | :---: | :---: | :---: |
-| **Cloud Containment** | 5 | 0.0% | **100.0%** | 94.0 / 100 |
-| **AI/ML Architectures** | 5 | 20.0% | **100.0%** | 98.0 / 100 |
-| **Dataviz Encodings** | 5 | 20.0% | **100.0%** | 98.0 / 100 |
-| **SBGN Biological Pathways**| 5 | 40.0% | **100.0%** | 100.0 / 100 |
-| **Overall Composite** | **20** | **20.0%** | **100.0%** | **97.5 / 100** |
+| **Cloud Containment** | 5 | 0.0% | **100.0%** | 98.0 / 100 |
+| **AI/ML Architectures** | 5 | 0.0% | **100.0%** | 98.0 / 100 |
+| **Dataviz Encodings** | 5 | 0.0% | **100.0%** | 98.0 / 100 |
+| **SBGN Biological Pathways** | 5 | 0.0% | **100.0%** | 100.0 / 100 |
+| **Overall Composite** | **20** | **0.0%** | **100.0%** | **98.5 / 100** |
+
+The baseline pass rate measures 20 synthetic anti-pattern SVG samples (drop-shadow filters, PaaS-in-subnet placement, missing viewBox, CSS box-shadow) against the editorial linter.
 
 ### Common Failure Modes in Baselines
-- **Drop-Shadow Filter Violations (65% of baseline samples):** Unconstrained LLM outputs insert `<feDropShadow>`, `<feGaussianBlur>`, or CSS `box-shadow`, violating editorial print clarity.
-- **PaaS Subnet Misplacement (60% of cloud samples):** LLMs place PaaS services (e.g., Azure SQL, Key Vault, Storage) directly into subnets rather than resource groups with Private Endpoints.
-- **Missing / Non-Responsive ViewBox (25% of baseline samples):** Absolute pixel widths without responsive coordinate scaling.
-- **Flow Conservation Violations (70% of dataviz samples):** Unconstrained Sankey diagrams leak flow mass across intermediate nodes.
+- **Drop-Shadow Filter Violations (85% of baseline samples, 17/20):** Drop shadow filters (`<feDropShadow>`, `<feGaussianBlur>`) and CSS `box-shadow` violate editorial flat vector clarity.
+- **PaaS Subnet Misplacement (10% of baseline samples, 2/20; 40% of cloud samples):** PaaS services (e.g., Azure SQL) placed directly into subnets instead of resource groups with Private Endpoints.
+- **Missing / Non-Responsive ViewBox (5% of baseline samples, 1/20):** SVG lacking an explicit responsive `viewBox` attribute.
+- **Flow Conservation Violations (dataviz baselines):** Unconstrained Sankey diagrams leak flow mass across intermediate nodes.
 
 ### Limitations & Failure Cases
 - **Extreme Containment Density:** Topologies exceeding 12 subnets per VNet require custom coordinate inputs rather than automatic packing.

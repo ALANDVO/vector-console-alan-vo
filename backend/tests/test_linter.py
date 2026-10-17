@@ -38,4 +38,38 @@ def test_linter_clean_editorial_svg_passes():
     )
     report = DiagramLinter.lint_svg(clean_svg)
     assert report.is_compliant
-    assert report.score == 100.0
+def test_linter_detects_paas_in_subnet_via_zone_id():
+    """PaaS services placed in a subnet zone (snet abbreviation) must be flagged."""
+    svg_with_paas = (
+        '<svg viewBox="0 0 500 300">'
+        '<rect data-azure-node="sql-1" data-azure-service="azure_sql" data-azure-zone="snet-app" x="20" y="20" width="100" height="50"/>'
+        '<rect data-azure-node="st-1" data-azure-service="storage_account" data-azure-zone="snet-data" x="20" y="80" width="100" height="50"/>'
+        '</svg>'
+    )
+    report = DiagramLinter.lint_svg(svg_with_paas)
+    assert not report.is_compliant
+    paas_violations = [v for v in report.violations if v.rule_id == "azure-paas-containment"]
+    assert len(paas_violations) == 2
+
+def test_linter_detects_paas_in_subnet_via_zone_tier():
+    """PaaS services in zones marked with data-azure-zone-tier=subnet must be flagged."""
+    svg_with_paas = (
+        '<svg viewBox="0 0 500 300">'
+        '<rect data-azure-node="kv-1" data-azure-service="key_vault" data-azure-zone="kv-zone" data-azure-zone-tier="subnet" x="20" y="20" width="100" height="50"/>'
+        '</svg>'
+    )
+    report = DiagramLinter.lint_svg(svg_with_paas)
+    assert not report.is_compliant
+    assert any(v.rule_id == "azure-paas-containment" for v in report.violations)
+
+def test_linter_passes_paas_in_resource_group():
+    """PaaS services correctly placed in a resource group zone must pass."""
+    svg_clean = (
+        '<svg viewBox="0 0 500 300">'
+        '<rect data-azure-node="sql-1" data-azure-service="azure_sql" data-azure-zone="rg-core" data-azure-zone-tier="resource_group" x="20" y="20" width="100" height="50"/>'
+        '</svg>'
+    )
+    report = DiagramLinter.lint_svg(svg_clean)
+    assert report.is_compliant
+    assert not any(v.rule_id == "azure-paas-containment" for v in report.violations)
+

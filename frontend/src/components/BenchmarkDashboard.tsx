@@ -112,8 +112,10 @@ export const BenchmarkDashboard: React.FC = () => {
                   <th style={{ padding: '0.6rem 0.75rem' }}>Category</th>
                   <th style={{ padding: '0.6rem 0.75rem' }}>Samples</th>
                   <th style={{ padding: '0.6rem 0.75rem' }}>Passed</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Guided Pass Rate</th>
-                  <th style={{ padding: '0.6rem 0.75rem' }}>Average Quality Score</th>
+                  <th style={{ padding: '0.6rem 0.75rem' }}>Vector Console Pass Rate</th>
+                  <th style={{ padding: '0.6rem 0.75rem' }}>Avg Quality Score</th>
+                  <th style={{ padding: '0.6rem 0.75rem' }}>Baseline Pass Rate</th>
+                  <th style={{ padding: '0.6rem 0.75rem' }}>Baseline Avg Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,6 +128,8 @@ export const BenchmarkDashboard: React.FC = () => {
                       <span className="badge badge-success">{stats.pass_rate.toFixed(1)}%</span>
                     </td>
                     <td className="mono" style={{ padding: '0.6rem 0.75rem' }}>{stats.average_score.toFixed(1)} / 100</td>
+                    <td className="mono" style={{ padding: '0.6rem 0.75rem', color: 'var(--text-muted)' }}>{stats.baseline_pass_rate.toFixed(1)}%</td>
+                    <td className="mono" style={{ padding: '0.6rem 0.75rem', color: 'var(--text-muted)' }}>{stats.baseline_average_score.toFixed(1)} / 100</td>
                   </tr>
                 ))}
               </tbody>
