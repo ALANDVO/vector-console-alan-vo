@@ -14,3 +14,6 @@ def test_run_benchmark_metrics():
     for cat in ["cloud_containment", "ai_ml_architectures", "dataviz_encodings", "sbgn_biology"]:
         assert cat in summary.category_scores
         assert summary.category_scores[cat]["total"] == 5
+        assert "baseline_pass_rate" in summary.category_scores[cat]
+        assert "baseline_average_score" in summary.category_scores[cat]
+        assert summary.category_scores[cat]["baseline_pass_rate"] < summary.category_scores[cat]["pass_rate"]

@@ -2,7 +2,7 @@ import re
 import xml.etree.ElementTree as ET
 from typing import List, Dict, Any, Optional
 from app.models.diagram import DiagramSpec, LintIssue, LintReport
-from app.services.containment_grammar import validate_containment_invariants
+from app.services.containment_grammar import validate_containment_invariants, PAAS_SERVICES
 from app.services.dataviz_grammar import validate_dataviz_invariants
 from app.services.ai_pipeline_grammar import validate_ai_pipeline_invariants
 
@@ -78,14 +78,21 @@ class DiagramLinter:
                     break # Report once per document
 
         # 5. Rule: Check PaaS in Subnet via data attributes
-        if 'data-azure-service="azure_sql"' in svg_str or 'data-azure-service="key_vault"' in svg_str:
-            # Check if placed in subnet without target
-            paas_subnet_matches = re.findall(r'data-azure-node="([^"]+)"[^>]*data-azure-service="(azure_sql|key_vault)"[^>]*data-azure-zone="([^"]*subnet[^"]*)"', svg_str)
+        services_pattern = '|'.join(sorted(PAAS_SERVICES))
+        if re.search(rf'data-azure-service="({services_pattern})"', svg_str):
+            # Match PaaS nodes in subnet zones via either machine-verifiable
+            # data-azure-zone-tier="subnet" (engine output) or data-azure-zone
+            # containing "snet"/"subnet" (raw or agent SVG).
+            paas_subnet_matches = re.findall(
+                rf'data-azure-node="([^"]+)"[^>]*data-azure-service="({services_pattern})"[^>]*data-(?:azure-zone-tier="subnet"|azure-zone="([^"]*(?:snet|subnet)[^"]*)")',
+                svg_str
+            )
             for node_id, service, zone in paas_subnet_matches:
+                zone_str = zone if zone else "(tier=subnet)"
                 issues.append(LintIssue(
                     rule_id="azure-paas-containment",
                     severity="error",
-                    message=f"Azure PaaS rule: '{node_id}' ({service}) is mapped into subnet zone '{zone}'. PaaS services belong to Resource Groups; only Private Endpoints reside in subnets.",
+                    message=f"Azure PaaS rule: '{node_id}' ({service}) is mapped into subnet zone '{zone_str}'. PaaS services belong to Resource Groups; only Private Endpoints reside in subnets.",
                     target=node_id
                 ))
 

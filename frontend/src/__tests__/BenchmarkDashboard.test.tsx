@@ -13,8 +13,8 @@ describe('BenchmarkDashboard Component', () => {
             passed_samples: 20,
             pass_rate: 100.0,
             category_scores: {
-              cloud_containment: { total: 5, passed: 5, pass_rate: 100.0, average_score: 95.0 },
-              ai_ml_architectures: { total: 5, passed: 5, pass_rate: 100.0, average_score: 98.0 }
+              cloud_containment: { total: 5, passed: 5, pass_rate: 100.0, average_score: 95.0, baseline_pass_rate: 0.0, baseline_average_score: 75.0 },
+              ai_ml_architectures: { total: 5, passed: 5, pass_rate: 100.0, average_score: 98.0, baseline_pass_rate: 0.0, baseline_average_score: 75.0 }
             },
             baseline_comparison: {
               baseline_pass_rate: 20.0,

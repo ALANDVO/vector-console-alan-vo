@@ -61,3 +61,22 @@ def test_valid_private_endpoint_placement_accepted():
     )
     issues = validate_containment_invariants(spec)
     assert len(issues) == 0
+
+def test_rendered_svg_contains_machine_verifiable_tier():
+    spec = DiagramSpec(
+        title="Tier Attr Test",
+        diagram_type=DiagramType.ARCHITECTURE_CLOUD,
+        zones=[
+            CloudZoneSpec(id="sub-1", tier="subscription", name="Sub"),
+            CloudZoneSpec(id="rg-1", tier="resource_group", name="RG", parent_id="sub-1"),
+            CloudZoneSpec(id="vnet-1", tier="vnet", name="VNet", parent_id="rg-1"),
+            CloudZoneSpec(id="snet-1", tier="subnet", name="SNet", parent_id="vnet-1"),
+        ],
+        nodes=[
+            CloudNodeSpec(id="vm-1", name="Worker", service_type="vm", zone_id="snet-1"),
+            CloudNodeSpec(id="sql-1", name="ProdDB", service_type="azure_sql", zone_id="rg-1"),
+        ]
+    )
+    svg = render_cloud_containment_svg(spec)
+    assert 'data-azure-zone-tier="subnet"' in svg
+    assert 'data-azure-zone-tier="resource_group"' in svg

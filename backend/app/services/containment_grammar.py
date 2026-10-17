@@ -80,6 +80,7 @@ def render_cloud_containment_svg(spec: DiagramSpec) -> str:
 
         n_pos: Dict[str, Tuple[float, float]] = {}
         n_cnt: Dict[str, int] = {}
+        zone_tiers: Dict[str, str] = {z.id: z.tier for z in spec.zones}
         for n in spec.nodes:
             zbox = coords.get(n.zone_id, (pad + 30.0, pad + 30.0, 200.0, 100.0))
             idx = n_cnt.get(n.zone_id, 0); n_cnt[n.zone_id] = idx + 1
@@ -89,7 +90,7 @@ def render_cloud_containment_svg(spec: DiagramSpec) -> str:
             s_col = accent if is_accent else "#94a3b8"
             ip_str = f'<text x="{nx+132}" y="{ny+30}" text-anchor="end" class="ip-badge mono">{html.escape(n.ip_address)}</text>' if n.ip_address else ''
             elements += [
-                f'<g class="node-item" data-azure-node="{n.id}" data-azure-service="{n.service_type}" data-azure-zone="{n.zone_id}" data-azure-target="{n.private_endpoint_target or ""}"><rect x="{nx}" y="{ny}" width="140" height="42" rx="3" fill="#ffffff" stroke="{s_col}" stroke-width="1.2" /><text x="{nx+8}" y="{ny+16}" class="node-text">{html.escape(n.name)}</text><text x="{nx+8}" y="{ny+30}" class="node-sub mono">{html.escape(n.service_type.replace("_", " "))}</text>{ip_str}</g>'
+                f'<g class="node-item" data-azure-node="{n.id}" data-azure-service="{n.service_type}" data-azure-zone="{n.zone_id}" data-azure-zone-tier="{zone_tiers.get(n.zone_id, "")}" data-azure-target="{n.private_endpoint_target or ""}">' + f'<rect x="{nx}" y="{ny}" width="140" height="42" rx="3" fill="#ffffff" stroke="{s_col}" stroke-width="1.2" /><text x="{nx+8}" y="{ny+16}" class="node-text">{html.escape(n.name)}</text><text x="{nx+8}" y="{ny+30}" class="node-sub mono">{html.escape(n.service_type.replace("_", " "))}</text>{ip_str}</g>'
             ]
 
         for e in spec.edges:

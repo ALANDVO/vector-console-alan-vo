@@ -121,6 +121,8 @@ export interface CategoryScore {
   passed: number;
   pass_rate: number;
   average_score: number;
+  baseline_pass_rate: number;
+  baseline_average_score: number;
 }
 
 export interface EvalSummary {

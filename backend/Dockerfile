@@ -9,9 +9,9 @@ WORKDIR /app
 RUN groupadd -g 10001 appgroup && \
     useradd -u 10001 -g appgroup -s /bin/sh -m appuser
 
-COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY VERSION .
 COPY app/ ./app/
 
 RUN chown -R appuser:appgroup /app
