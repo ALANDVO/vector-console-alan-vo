@@ -1,7 +1,11 @@
 {
   "name": "vector-console-frontend",
   "version": "1.1.0",
-  "author": "Alan Vo <alanvo@gmail.com>",
+  "author": {
+    "name": "Alan Vo",
+    "email": "alanvo@gmail.com",
+    "url": "https://github.com/ALANDVO"
+  },
   "license": "MIT",
   "type": "module",
   "scripts": {
