@@ -51,6 +51,26 @@ def test_linter_detects_paas_in_subnet_via_zone_id():
     paas_violations = [v for v in report.violations if v.rule_id == "azure-paas-containment"]
     assert len(paas_violations) == 2
 
+
+def test_linter_detects_all_paas_services_in_subnet():
+    """All 5 PaaS services must be flagged when placed in subnet zones."""
+    paas_services = ["azure_sql", "key_vault", "storage_account", "cosmos_db", "event_hub"]
+    svg_parts = ['<svg viewBox="0 0 500 500">']
+    for i, svc in enumerate(paas_services):
+        y = 20 + i * 60
+        svg_parts.append(
+            f'<rect data-azure-node="{svc}-1" data-azure-service="{svc}" '
+            f'data-azure-zone="snet-{svc}" x="20" y="{y}" width="100" height="50"/>'
+        )
+    svg_parts.append('</svg>')
+    svg_with_all_paas = ''.join(svg_parts)
+
+    report = DiagramLinter.lint_svg(svg_with_all_paas)
+    assert not report.is_compliant
+    paas_violations = [v for v in report.violations if v.rule_id == "azure-paas-containment"]
+    assert len(paas_violations) == 5
+    detected_services = {v.target.split('-')[0] for v in paas_violations}
+    assert detected_services == set(paas_services)
 def test_linter_detects_paas_in_subnet_via_zone_tier():
     """PaaS services in zones marked with data-azure-zone-tier=subnet must be flagged."""
     svg_with_paas = (
