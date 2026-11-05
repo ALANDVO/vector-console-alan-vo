@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.2.0 — eval JSON output for CI/CD
+
+- Added `--json-only` and `-o/--output` CLI options to benchmark runner for machine-readable JSON output
+- JSON output includes all metrics: pass rates, scores, category breakdown, baseline comparison, timestamp
+- Enables CI/CD integration, automated reporting, and historical benchmark tracking
+
 ## 1.2.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.

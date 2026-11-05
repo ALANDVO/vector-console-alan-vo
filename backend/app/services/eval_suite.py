@@ -1,4 +1,8 @@
 import datetime
+import json
+import argparse
+import sys
+from pathlib import Path
 from typing import List, Dict, Any
 from app.models.diagram import (
     DiagramSpec, DiagramType, DatavizItem, SankeyLink,
@@ -7,7 +11,6 @@ from app.models.diagram import (
 )
 from app.services.vector_engine import VectorEngine
 from app.services.linter import DiagramLinter
-
 B_SH = '<svg viewBox="0 0 500 300"><defs><filter id="f"><feDropShadow/></filter></defs><rect filter="url(#f)" x="20" y="20" width="100" height="50"/></svg>'
 B_PAAS = '<svg viewBox="0 0 500 300"><rect data-azure-node="s1" data-azure-service="azure_sql" data-azure-zone="snet-app" x="20" y="20" width="100" height="50"/></svg>'
 B_BOX = '<svg viewBox="0 0 500 300"><style>.b{box-shadow:2px 2px 4px #000;}</style><rect class="b" x="20" y="20" width="100" height="50"/></svg>'
@@ -200,8 +203,28 @@ class EvaluationSuite:
             executed_at=datetime.datetime.now(datetime.timezone.utc).isoformat()
         )
 
+
 def main():
+    parser = argparse.ArgumentParser(description="Run Vector Console AI/ML Diagram Evaluation Benchmark")
+    parser.add_argument(
+        "-o", "--output",
+        type=Path,
+        help="Write benchmark results to JSON file",
+        metavar="FILE"
+    )
+    parser.add_argument(
+        "--json-only",
+        action="store_true",
+        help="Output only JSON to stdout (for piping)"
+    )
+    args = parser.parse_args()
+
     summary = EvaluationSuite.run_benchmark()
+
+    if args.json_only:
+        print(summary.model_dump_json(indent=2))
+        return
+
     print("=" * 60)
     print("VECTOR CONSOLE AI/ML DIAGRAM EVALUATION BENCHMARK")
     print("=" * 60)
@@ -217,6 +240,10 @@ def main():
         for failure in summary.baseline_comparison["common_baseline_failures"]:
             print(f"  - {failure}")
     print("\nBenchmark Execution Complete.")
+
+    if args.output:
+        args.output.write_text(summary.model_dump_json(indent=2))
+        print(f"\nResults written to {args.output}")
 
 if __name__ == "__main__":
     main()
