@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-linter-paas-detection-fix
+eval-json-output
 
 ## Roadmap
 
@@ -59,6 +59,20 @@ Acceptance:
 Implementation: `backend/app/services/linter.py`, `backend/app/services/containment_grammar.py`, `backend/app/services/eval_suite.py`
 
 Tests: `backend/tests/test_linter.py`, `backend/tests/test_containment_grammar.py`, `backend/tests/test_eval_suite.py`
+
+### eval-json-output — Benchmark JSON Output for CI/CD Integration
+
+Status: done
+
+Acceptance:
+- Benchmark CLI supports --json-only flag for machine-readable output to stdout
+- Benchmark CLI supports -o/--output FILE to write results to JSON file
+- JSON output includes all benchmark metrics: pass rates, scores, category breakdown, baseline comparison, timestamp
+- Useful for CI/CD pipelines, automated reporting, and historical tracking
+
+Implementation: `backend/app/services/eval_suite.py`
+
+Tests: `backend/tests/test_eval_suite.py`
 
 ### oidc-auth-and-multi-provider-llm — Enterprise OIDC Authentication and Multi-Provider Advisory LLM
 
