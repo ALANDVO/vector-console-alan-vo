@@ -242,3 +242,7 @@ All API credentials are held strictly server-side and redacted from application 
 GitHub: [@ALANDVO](https://github.com/ALANDVO)
 
 Released under the **MIT License**. Copyright (c) 2026 Alan Vo.
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

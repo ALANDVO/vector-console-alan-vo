@@ -33,3 +33,7 @@ Partial code published for continued development. Known issues: STATUS.md.
 - Added static linting suite enforcing honest-data rules, no-shadow styling, and machine-verifiable attributes.
 - Implemented reproducible AI/ML diagram evaluation benchmark suite.
 - Integrated Keycloak OIDC authentication architecture with local demo mode and opt-in multi-provider LLM adapters.
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

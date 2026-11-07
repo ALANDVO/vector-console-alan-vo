@@ -82,3 +82,6 @@ Acceptance:
 - Enforces OIDC authorization-code Keycloak login with PKCE, state/nonce, role-based access control, and demo mode
 - Connects advisory LLM explanations to OpenAI, Anthropic, Gemini, and Olla with bounded timeouts and error redaction
 
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)
