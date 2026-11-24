@@ -1,6 +1,8 @@
 import re
 import secrets
 import time
+import base64
+import hashlib
 from typing import Optional, Dict, Any, List
 from fastapi import Request, HTTPException, status, Depends
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -18,6 +20,13 @@ ROLE_HIERARCHY = {
     "admin": 3
 }
 
+def _compute_pkce_challenge(code_verifier: str) -> str:
+    """Compute S256 PKCE code challenge per RFC 7636 Section 4.2."""
+    challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(code_verifier.encode()).digest()
+    ).rstrip(b'=').decode()
+    return challenge
+
 def redact_secrets(text: str) -> str:
     """Redacts synthetic and real sensitive tokens and keys from log strings and error messages."""
     if not text:
@@ -28,7 +37,7 @@ def redact_secrets(text: str) -> str:
     text = re.sub(r'\b(gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,})\b', '[REDACTED]', text)
     return text
 
-def create_session_token(user_data: Dict[str, Any]) -> str:
+def create_session_token(user_data: Dict[str, Any], pkce_code_challenge: Optional[str] = None) -> str:
     payload = {
         "sub": user_data["sub"],
         "email": user_data.get("email", ""),
@@ -37,6 +46,8 @@ def create_session_token(user_data: Dict[str, Any]) -> str:
         "created_at": time.time(),
         "csrf_token": secrets.token_hex(16)
     }
+    if pkce_code_challenge is not None:
+        payload["pkce_code_challenge"] = pkce_code_challenge
     return serializer.dumps(payload)
 
 def verify_session_token(token: str) -> Optional[Dict[str, Any]]:
