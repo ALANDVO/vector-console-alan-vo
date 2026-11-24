@@ -3,7 +3,7 @@
 > Work in progress. This checkpoint may be incomplete or fail tests. See PLAN.md and STATUS.md before use.
 
 
-Current version: `1.6.0`.
+Current version: `1.7.0`.
 
 **Vector Console** is an editorial vector graphics synthesis and structural diagram evaluation console designed for AI coding agents (Claude Code, Cursor, Codex, GitHub Copilot, Factory Droid, and Pi). While modern Large Language Models frequently generate malformed, visually noisy SVG ("Mermaid slop", drop shadow filters, clipped viewBoxes, and illegal cloud security topologies), Vector Console provides a deterministic, grammar-driven compiler and automated linter ensuring crisp vector geometry, single-accent ink opacity ramps, monospace numerical typography, and machine-verifiable cloud containment invariants.
 
